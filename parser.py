@@ -5,49 +5,26 @@ import os
 from optparse import OptionParser
 
 import pyverilog
+import pyverilog.utils.util as util
 from pyverilog.vparser.parser import parse
+from pyverilog.dataflow.dataflow_analyzer import VerilogDataflowAnalyzer
+from pyverilog.dataflow.optimizer import VerilogDataflowOptimizer
+from pyverilog.dataflow.walker import VerilogDataflowWalker
 
 
-def main():
-    INFO = "Verilog code parser"
-    VERSION = pyverilog.__version__
-    USAGE = "Usage: python example_parser.py file ..."
-
-    def showVersion():
-        print(INFO)
-        print(VERSION)
-        print(USAGE)
-        sys.exit()
-
-    optparser = OptionParser()
-    optparser.add_option("-v", "--version", action="store_true", dest="showversion",
-                         default=False, help="Show the version")
-    optparser.add_option("-I", "--include", dest="include", action="append",
-                         default=[], help="Include path")
-    optparser.add_option("-D", dest="define", action="append",
-                         default=[], help="Macro Definition")
-    (options, args) = optparser.parse_args()
-
-    filelist = args
-    if options.showversion:
-        showVersion()
-
-    for f in filelist:
-        if not os.path.exists(f):
-            raise IOError("file not found: " + f)
-
-    if len(filelist) == 0:
-        showVersion()
-
+def parse_verilog(filelist, preprocess_include, preprocess_define):
     ast, directives = parse(filelist,
-                            preprocess_include=options.include,
-                            preprocess_define=options.define)
+                            preprocess_include=preprocess_include,
+                            preprocess_define=preprocess_define)
+
+
 
     mem_data = {}
     for child in ast.children():
         # child.definitions gives us all the modules defined in the file
         for module in child.definitions:
             # module.items give us the param list, port list, delcarations, always and assign statements
+            module_name = module.name
             for items in module.items:
                 # filtering out just the declarations
                 if str(type(items)) == "<class 'pyverilog.vparser.ast.Decl'>":
@@ -61,11 +38,14 @@ def main():
                                 mem_width = (int(decl.width.msb.value) - int(decl.width.lsb.value)) + 1
                                 for dimensions in decl.dimensions.lengths:
                                     mem_depth = (int(dimensions.lsb.value) - int(dimensions.msb.value)) + 1
-                                    mem_data[memory_name] = (mem_depth, mem_width)
-    #print(ast.children()[0].children()[0].children())
-    print(mem_data)
+                                    mem_data[module_name + '.' + memory_name] = (mem_depth, mem_width)
+
+
+
+
     ast.show()
+    return mem_data
 
 
 if __name__ == '__main__':
-    main()
+    parse_verilog()
