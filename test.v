@@ -8,6 +8,7 @@ module TOP (
   output [7:0] Q);
 
   reg [7:0] mem [0:511];
+  reg [7:0] mem_0 [0:255];
   reg [7:0] d_ADDR; 
   wire a;
   wire b;
