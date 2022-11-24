@@ -5,7 +5,7 @@ import os
 from optparse import OptionParser
 import pyverilog
 import parser
-
+import mem_compiler
 
 def main():
     INFO = "Verilog code parser"
@@ -43,6 +43,8 @@ def main():
                             preprocess_define=options.define)
 
     print(mem_data)
+
+    mem_compiler.create_config(mem_data)
 
 if __name__ == "__main__":
     main()
