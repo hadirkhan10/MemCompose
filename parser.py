@@ -19,6 +19,7 @@ def parse_verilog(filelist, preprocess_include, preprocess_define):
 
 
 
+
     mem_data = {}
     for child in ast.children():
         # child.definitions gives us all the modules defined in the file
@@ -37,7 +38,7 @@ def parse_verilog(filelist, preprocess_include, preprocess_define):
                                 memory_name = decl.name
                                 mem_width = (int(decl.width.msb.value) - int(decl.width.lsb.value)) + 1
                                 for dimensions in decl.dimensions.lengths:
-                                    mem_depth = (int(dimensions.lsb.value) - int(dimensions.msb.value)) + 1
+                                    mem_depth = (int(dimensions.msb.value) - int(dimensions.lsb.value)) + 1
                                     mem_data[module_name + '.' + memory_name] = (mem_depth, mem_width)
 
 
