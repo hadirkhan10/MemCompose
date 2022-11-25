@@ -10,7 +10,7 @@ import mem_compiler
 def main():
     INFO = "Verilog code parser"
     VERSION = pyverilog.__version__
-    USAGE = "Usage: python marshal.py file ..."
+    USAGE = "Usage: python memcompose.py file ..."
 
     def showVersion():
         print(INFO)

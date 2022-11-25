@@ -6,7 +6,7 @@ def create_config(mem_data):
         tech_name = 'scn4m_subm'
         print("Creating memory:", key, "of depth:", num_words, "and width:", word_size)
         with open(f"{key}.py", "w") as file:
-            file.write(f"# this file is created by Marshal - Muhammad Hadir Khan\n"
+            file.write(f"# this file is created by MemCompose - Muhammad Hadir Khan\n"
                        f"# data word size \n"
                        f"word_size = {word_size}\n"
                        f"# num of words \n"
