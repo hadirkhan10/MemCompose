@@ -1,30 +1,21 @@
-module TOP (
-  input CLK,
-  input RST_X,
-
-  input [7:0] ADDR,
-  input WE,
-  input [7:0] D,
-  output [7:0] Q);
-
-  reg [7:0] mem [0:511];
-  reg [7:0] mem_0 [0:255];
-  reg [7:0] d_ADDR; 
-  wire a;
-  wire b;
-  
-  always @(posedge CLK) begin
-    if(WE) mem[ADDR] <= D;
-    d_ADDR <= ADDR;
-  end
-  assign Q = mem[d_ADDR];
-  
+// Single-Port Block RAM No-Change Mode
+// File: rams_sp_nc.v
+module rams_sp_nc (clk, we, en, addr, di, dout);
+    input clk;
+    input we;
+    input en;
+    input [9:0] addr;
+    input [15:0] di;
+    output [15:0] dout;
+    reg [15:0] RAM [1023:0];
+    reg [15:0] dout;
+    always @(posedge clk) begin
+        if (en) begin
+            if (we)
+		        RAM[addr] <= di;
+		    else
+		        dout <= RAM[addr];
+		end
+    end
 endmodule
 
-//module AnotherTop(
-//		input clk,
-//		input rst,
-//		output flag);
-//
-//		assign flag = 1;
-//endmodule
