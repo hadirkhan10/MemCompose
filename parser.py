@@ -44,7 +44,7 @@ def parse_verilog(filelist, preprocess_include, preprocess_define):
 
 
 
-    ast.show()
+    #ast.show()
     return mem_data
 
 

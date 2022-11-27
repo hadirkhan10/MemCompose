@@ -6,6 +6,7 @@ from optparse import OptionParser
 import pyverilog
 import parser
 import mem_compiler
+import dataflow
 
 def main():
     INFO = "Verilog code parser"
@@ -25,6 +26,12 @@ def main():
                          default=[], help="Include path")
     optparser.add_option("-D", dest="define", action="append",
                          default=[], help="Macro Definition")
+    optparser.add_option("-t", "--top", dest="topmodule",
+                         default="TOP", help="Top module, Default=TOP")
+    optparser.add_option("--nobind", action="store_true", dest="nobind",
+                         default=False, help="No binding traversal, Default=False")
+    optparser.add_option("--noreorder", action="store_true", dest="noreorder",
+                         default=False, help="No reordering of binding dataflow, Default=False")
     (options, args) = optparser.parse_args()
 
     filelist = args
@@ -45,6 +52,13 @@ def main():
     print(mem_data)
 
     mem_compiler.create_config(mem_data)
+
+    dataflow.dataflow_analysis(filelist, options.topmodule, 
+                               mem_data, options.noreorder, options.nobind, 
+                               options.include, options.define)
+
+
+
 
 if __name__ == "__main__":
     main()
