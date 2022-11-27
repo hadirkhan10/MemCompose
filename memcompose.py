@@ -51,11 +51,16 @@ def main():
 
     print(mem_data)
 
-    mem_compiler.create_config(mem_data)
+    num_r_ports, num_w_ports, num_rw_ports = dataflow.dataflow_analysis(filelist, 
+                                                options.topmodule, 
+                                                mem_data, options.noreorder, options.nobind, 
+                                                options.include, options.define)
 
-    dataflow.dataflow_analysis(filelist, options.topmodule, 
-                               mem_data, options.noreorder, options.nobind, 
-                               options.include, options.define)
+    mem_compiler.create_config(mem_data, num_r_ports, num_w_ports, num_rw_ports)
+
+    print(f"Number of read-port: {num_r_ports}")
+    print(f"Number of write-port: {num_w_ports}")
+    print(f"Number of read-write-port: {num_rw_ports}")
 
 
 
