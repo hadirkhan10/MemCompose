@@ -134,7 +134,6 @@ def dataflow_analysis(file, topmodule, mem_data, noreorder, nobind, include, def
 
     if dest_mem_pointers == source_mem_pointers:
         num_rw_ports = len(dest_mem_pointers)
-        print(f"We have a {num_rw_ports}-RW configuration") 
     else:
         if len(dest_mem_pointers) > len(source_mem_pointers):
             # a scenario where config could be 1rw1w,
@@ -155,9 +154,7 @@ def dataflow_analysis(file, topmodule, mem_data, noreorder, nobind, include, def
             num_r_ports = 1
             num_w_ports = 1
 
-    print(f"Number of read-port: {num_r_ports}")
-    print(f"Number of write-port: {num_w_ports}")
-    print(f"Number of read-write-port: {num_rw_ports}")
+    return num_r_ports, num_w_ports, num_rw_ports
 
 
 
