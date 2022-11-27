@@ -1,5 +1,5 @@
 
-def create_config(mem_data):
+def create_config(mem_data, num_r_ports, num_w_ports, num_rw_ports):
     for key, value in mem_data.items():
         num_words = value[0]
         word_size = value[1]
@@ -11,6 +11,9 @@ def create_config(mem_data):
                        f"word_size = {word_size}\n"
                        f"# num of words \n"
                        f"num_words = {num_words}\n"
+                       f"num_rw_ports = {num_rw_ports}\n"
+                       f"num_w_ports = {num_w_ports}\n"
+                       f"num_r_ports = {num_r_ports}\n"
                        f"# Technology to use in $OPENRAM_TECH \n"
                        f"tech_name = '{tech_name}' \n"
                        f"nominal_corner_only = True \n"
