@@ -45,11 +45,16 @@ def main():
     if len(filelist) == 0:
         showVersion()
 
-    mem_data = parser.parse_verilog(filelist,
+    ast = parser.parse_verilog(filelist,
                             preprocess_include=options.include,
                             preprocess_define=options.define)
 
+    mem_data = parser.get_mem_data(ast)
+
     print(mem_data)
+
+    ports = parser.get_ports(ast)
+    print(ports)
 
     num_r_ports, num_w_ports, num_rw_ports = dataflow.dataflow_analysis(filelist, 
                                                 options.topmodule, 
