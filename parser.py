@@ -64,6 +64,20 @@ def get_mem_data(ast):
             # module.items give us the delcarations, always and assign statements
             for items in module.items:
                 # filtering out just the declarations
+                if str(type(items)) == "<class 'pyverilog.vparser.ast.InstanceList'>":
+                    for instance in items.instances:
+                        print(instance.parameterlist)
+                        print(instance.module)
+                        print(type(instance.module))
+                        print(instance.name)
+                        print(type(instance.name))
+                        print(type(instance.portlist))
+                        for port in instance.portlist:
+                            print(type(port))
+                            print("port name", port.portname)
+                            print(type(port.portname))
+                            print("argname", port.argname)
+                            print(type(port.argname))
                 if str(type(items)) == "<class 'pyverilog.vparser.ast.Decl'>":
                     # items.list for the declarations give us the either Reg or wires that are delcared
                     for decl in items.list:
