@@ -7,6 +7,7 @@ import pyverilog
 import parser
 import mem_compiler
 import dataflow
+import backend
 
 def main():
     INFO = "Verilog code parser"
@@ -62,6 +63,8 @@ def main():
                                                 options.include, options.define)
 
     mem_compiler.create_config(mem_data, num_r_ports, num_w_ports, num_rw_ports)
+
+    backend.verilog_writer(ports)
 
     print(f"Number of read-port: {num_r_ports}")
     print(f"Number of write-port: {num_w_ports}")
