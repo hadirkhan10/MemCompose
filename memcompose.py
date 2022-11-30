@@ -57,14 +57,22 @@ def main():
     ports = parser.get_ports(ast)
     print(ports)
 
-    num_r_ports, num_w_ports, num_rw_ports = dataflow.dataflow_analysis(filelist, 
-                                                options.topmodule, 
-                                                mem_data, options.noreorder, options.nobind, 
-                                                options.include, options.define)
+    num_r_ports, num_w_ports, num_rw_ports = dataflow.dataflow_analysis(
+                                                filelist,
+                                                options.topmodule,
+                                                mem_data, options.noreorder,
+                                                options.nobind,
+                                                options.include,
+                                                options.define)
 
-    mem_compiler.create_config(mem_data, num_r_ports, num_w_ports, num_rw_ports)
+    instance_name = mem_compiler.create_config(mem_data, num_r_ports, num_w_ports, num_rw_ports)
 
-    backend.verilog_writer(ports)
+    openram_ports = mem_compiler.create_openram_style_ports(
+                            num_r_ports,
+                            num_w_ports,
+                            num_rw_ports)
+
+    backend.verilog_writer(ports, instance_name, num_r_ports, num_w_ports, num_rw_ports, openram_ports)
 
     print(f"Number of read-port: {num_r_ports}")
     print(f"Number of write-port: {num_w_ports}")
