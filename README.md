@@ -9,3 +9,5 @@ python3 memcompose.py -t <top> test.v
 # Citation
 
 This project uses PyVerilog (https://github.com/PyHDI/Pyverilog)
+
+This project generates configuration files for OpenRAM (https://github.com/VLSIDA/OpenRAM)
