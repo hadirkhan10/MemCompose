@@ -19,77 +19,43 @@
 //    end
 //endmodule
 
-// ****** OPENRAM LINKING ********
-//module rams_sp_nc (clk, we, en, addr, di, dout);
-//    input clk;
-//    input we;
-//    input en;
-//    input [9:0] addr;
-//    input [15:0] di;
-//    * slight modification here. All outputs should be defined as reg
-//    output [15:0] dout;
-//    reg [15:0] dout;
-//    * will need to add a wire here using the output name
-//    * this action will be repeated for each output of the memory
-//    wire [15:0] dout_wire;
-//
-//    * will need to generate this instantiation 
-//    sram_8_512_scn4m_subm mem0 (
-//    	.clk0(clk),
-//    	.csb0(~en),
-//    	.web0(~we),
-//    	.addr0(addr),
-//    	.din0(di),
-//    	.dout0(dout_wire)
-//    	);
-//
-//    	* will need to generate one always block here
-//    	always @(posedge clk) begin
-//    		// this action will be repeated for each output of the memory
-//    		dout <= dout_wire;
-//    	end
-//endmodule
-
-
-
 // Simple Dual-Port Block RAM with One Clock
 // File: simple_dual_one_clock.v
 //
 // dest_mem_pointers = [addra]
 // source_mem_pointers = [addrb]
 //
-module simple_dual_one_clock (
-    input clka,
-    input clkb,
-	input ena,
-	input enb,
-	input wea,
-    input [9:0] addra,
-    input [9:0] addrb,
-    input [15:0] dia,
-    output [15:0] dob
-	);
-
-    reg [15:0] ram [1023:0];
-    reg [15:0] dob;
-
-	// .memcompose begin
-	// chip_select = ena , enb
-	// write_en = wea 
-	// addr = addra, addrb
-	// clock = clk
-	// 
-	// .memcompose end
-    always @(posedge clka) begin
-        if (ena) begin
-            ram[addra] <= dia;
-        end
-    end
-    always @(posedge clkb) begin
-        if (enb)
-            dob <= ram[addrb];
-        end
-endmodule
+//module simple_dual_one_clock (
+//    input clka,
+//    input clkb,
+//	input ena,
+//	input enb,
+//    input [9:0] addra,
+//    input [9:0] addrb,
+//    input [15:0] dia,
+//    output [15:0] dob
+//	);
+//
+//    reg [15:0] ram [1023:0];
+//    reg [15:0] dob;
+//
+//	// .memcompose begin
+//	// chip_select = ena , enb
+//	// write_en = wea 
+//	// addr = addra, addrb
+//	// clock = clk
+//	// 
+//	// .memcompose end
+//    always @(posedge clka) begin
+//        if (ena) begin
+//            ram[addra] <= dia;
+//        end
+//    end
+//    always @(posedge clkb) begin
+//        if (enb)
+//            dob <= ram[addrb];
+//        end
+//endmodule
 
 // dest_mem_pointers = [addra, addrb]
 // source_mem_pointers = [addra]
@@ -99,7 +65,6 @@ endmodule
 //	input ena,
 //	input enb,
 //	input wea,
-//	input web,
 //    input  [5:0]  addra,addrb,
 //    input  [15:0] dia,dib,
 //    output [15:0] doa);
@@ -165,31 +130,31 @@ endmodule
 // Download: http://www.xilinx.com/txpatches/pub/documentation/misc/xstug_examples.zip
 // File: HDL_Coding_Techniques/rams/rams_16.v
 //
-//module v_rams_16 (
-//    input  clka,
-//	input clkb,
-//	input ena,
-//	input enb,
-//	input wea,
-//	input web,
-//    input  [5:0]  addra,addrb,
-//    input  [15:0] dia,dib,
-//    output [15:0] doa,dob);
-//    reg    [15:0] ram [63:0];
-//    reg    [15:0] doa,dob;
-//    always @(posedge clka) begin
-//        if (ena)
-//        begin
-//            if (wea)
-//                ram[addra] <= dia;
-//            doa <= ram[addra];
-//		end 
-//    end
-//    always @(posedge clkb) begin
-//        if (enb)
-//        begin
-//            if (web)
-//                ram[addrb] <= dib;
-//            dob <= ram[addrb];
-//end end
-//endmodule
+module v_rams_16 (
+    input  clka,
+	input clkb,
+	input ena,
+	input enb,
+	input wea,
+	input web,
+    input  [5:0]  addra,addrb,
+    input  [15:0] dia,dib,
+    output [15:0] doa,dob);
+    reg    [15:0] ram [63:0];
+    reg    [15:0] doa,dob;
+    always @(posedge clka) begin
+        if (ena)
+        begin
+            if (wea)
+                ram[addra] <= dia;
+            doa <= ram[addra];
+		end 
+    end
+    always @(posedge clkb) begin
+        if (enb)
+        begin
+            if (web)
+                ram[addrb] <= dib;
+            dob <= ram[addrb];
+end end
+endmodule
