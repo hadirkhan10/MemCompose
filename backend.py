@@ -26,62 +26,79 @@ def verilog_writer(portlist, instance_name, num_r_ports, num_w_ports, num_rw_por
             assignments.append(assign_dout)
 
     # 2RW
-    # module_port_list = {
-
-    #        "clock": ("clka", "clkb"),
-    #        "chip_select": ("ena", "enb"),
-    #        "write_en": ("wea", "web"),
-    #        "address": ("addra", "addrb"),
-    #        "data_in": ("dina", "dinb"),
-    #        "data_out": ("douta", "doutb")
-    #        }
+    module_port_list = {
+            "clock": ("clka", "clkb"),
+            "chip_select": ("ena", "enb"),
+            "write_en": ("wea", "web"),
+            "address": ("addra", "addrb"),
+            "data_in": ("dina", "dinb"),
+            "data_out": ("doa", "dob")
+            }
 
     # 1rw1r
-    # module_port_list = {
+    #module_port_list = {
     #        "clock": ("clka", "clkb"),
     #        "chip_select": ("ena", "enb"),
-    #        "write_en": ("wea"),
+    #        "write_en": ("wea",),
     #        "address": ("addra", "addrb"),
-    #        "data_in": ("dina"),
+    #        "data_in": ("dina",),
     #        "data_out": ("doa", "dob")
     #        }
 
     # 1rw1w
-    # module_port_list = {
+    #module_port_list = {
     #        "clock": ("clka", "clkb"),
     #        "chip_select": ("ena", "enb"),
-    #        "write_en": ("wea"),
+    #        "write_en": ("wea",),
     #        "address": ("addra", "addrb"),
     #        "data_in": ("dina", "dinb"),
-    #        "data_out": ("doa")
+    #        "data_out": ("doa",)
     #        }
 
     # 1rw
-    # module_port_list = {
-    #        "clock": ("clk"),
-    #        "chip_select": ("en"),
-    #        "write_en": ("we"),
-    #        "address": ("addr"),
-    #        "data_in": ("di"),
-    #        "data_out": ("dout")
+    #module_port_list = {
+    #        "clock": ("clk",),
+    #        "chip_select": ("en",),
+    #        "write_en": ("we",),
+    #        "address": ("addr",),
+    #        "data_in": ("di",),
+    #        "data_out": ("dout",)
     #        }
 
     # 1r1w
-    module_port_list = {
-            "clock": ("clka", "clkb"),
-            "chip_select": ("ena", "enb"),
-            "write_en": (),
-            "address": ("addra", "addrb"),
-            "data_in": ("dia"),
-            "data_out": ("dob")
+    #module_port_list = {
+    #        "clock": ("clka", "clkb"),
+    #        "chip_select": ("ena", "enb"),
+    #        "write_en": (),
+    #        "address": ("addra", "addrb"),
+    #        "data_in": ("dia",),
+    #        "data_out": ("dob",)
+    #        }
+
+    module_port_polarity = {
+            "chip_select": "active high",
+            "write_en": "active high",
             }
+
+    openram_port_polarity = {
+            "chip_select": "active low",
+            "write_en": "active low"
+            }
+
+    def get_port_polarity(module_port_pol, openram_port_pol):
+        if module_port_pol == "active low" and openram_port_pol == "active low":
+            return ""
+        elif module_port_pol == "active low" and openram_port_pol == "active high":
+            return "~"
+        elif module_port_pol == "active high" and openram_port_pol == "active low":
+            return "~"
+        elif module_port_pol == "active high " and openram_port_pol == "active high":
+            return ""
+
 
     # TODO: right now just storing the read value to dout reg based on the
     # first clock provided by the user in case of dual port sram
-    if len(module_port_list["clock"]) > 1:
-        clock = module_port_list["clock"][0]
-    else:
-        clock = module_port_list["clock"]
+    clock = module_port_list["clock"][0]
 
     sens = vast.Sens(vast.Identifier(clock), type='posedge')
     senslist = vast.SensList([sens])
@@ -95,25 +112,90 @@ def verilog_writer(portlist, instance_name, num_r_ports, num_w_ports, num_rw_por
     for key, ports in openram_ports.items():
         if num_rw_ports == 2:
             port_type = key
-            port0_name = ports[0]
-            port1_name = ports[1]
-            argname0 = module_port_list[port_type][0]
-            argname1 = module_port_list[port_type][1]
-            port0 = vast.PortArg(portname=port0_name, argname=vast.Identifier(name=argname0))
-            port1 = vast.PortArg(portname=port1_name, argname=vast.Identifier(name=argname1))
-            instance_port_list.append(port0)
-            instance_port_list.append(port1)
+            if port_type == "chip_select" or port_type == "write_en":
+                sign = get_port_polarity(module_port_polarity[port_type], openram_port_polarity[port_type])
+
+                argname0 = sign + module_port_list[port_type][0]
+                argname1 = sign + module_port_list[port_type][1]
+                port0 = vast.PortArg(portname=ports[0], argname=vast.Identifier(name=argname0))
+                port1 = vast.PortArg(portname=ports[1], argname=vast.Identifier(name=argname1))
+                instance_port_list.append(port0)
+                instance_port_list.append(port1)
+            else:
+                if port_type == "data_out":
+                    argname0 = module_port_list[port_type][0]+"_wire"
+                    argname1 = module_port_list[port_type][1]+"_wire"
+                    port0 = vast.PortArg(portname=ports[0], argname=vast.Identifier(name=argname0))
+                    port1 = vast.PortArg(portname=ports[1], argname=vast.Identifier(name=argname1))
+                    instance_port_list.append(port0)
+                    instance_port_list.append(port1)
+                else:
+                    port0_name = ports[0]
+                    port1_name = ports[1]
+                    argname0 = module_port_list[port_type][0]
+                    argname1 = module_port_list[port_type][1]
+                    port0 = vast.PortArg(portname=port0_name, argname=vast.Identifier(name=argname0))
+                    port1 = vast.PortArg(portname=port1_name, argname=vast.Identifier(name=argname1))
+                    instance_port_list.append(port0)
+                    instance_port_list.append(port1)
         elif num_rw_ports == 1:
             if num_r_ports == 1:
+                # 1rw1r configuration
                 port_type = key
                 if port_type == "data_in" or port_type == "write_en":
-                    argname0 = module_port_list[port_type]
-                    port0 = vast.PortArg(portname=ports, argname=vast.Identifier(name=argname0))
-                    instance_port_list.append(port0)
+                    # checking for the polarity on write_en
+                    if port_type == "write_en":
+                        sign = get_port_polarity(module_port_polarity[port_type], openram_port_polarity[port_type])
+                        argname0 = sign + module_port_list[port_type][0]
+                        port0 = vast.PortArg(portname=ports, argname=vast.Identifier(name=argname0))
+                        instance_port_list.append(port0)
+                    else:
+                        argname0 = module_port_list[port_type][0]
+                        port0 = vast.PortArg(portname=ports, argname=vast.Identifier(name=argname0))
+                        instance_port_list.append(port0)
                 else:
                     if port_type == "data_out":
                         argname0 = module_port_list[port_type][0]+"_wire"
                         argname1 = module_port_list[port_type][1]+"_wire"
+                        port0 = vast.PortArg(portname=ports[0], argname=vast.Identifier(name=argname0))
+                        port1 = vast.PortArg(portname=ports[1], argname=vast.Identifier(name=argname1))
+                        instance_port_list.append(port0)
+                        instance_port_list.append(port1)
+                    else:
+                        if port_type == "chip_select":
+                            sign = get_port_polarity(module_port_polarity[port_type], openram_port_polarity[port_type])
+
+                            argname0 = sign + module_port_list[port_type][0]
+                            argname1 = sign + module_port_list[port_type][1]
+                            port0 = vast.PortArg(portname=ports[0], argname=vast.Identifier(name=argname0))
+                            port1 = vast.PortArg(portname=ports[1], argname=vast.Identifier(name=argname1))
+                            instance_port_list.append(port0)
+                            instance_port_list.append(port1)
+                        else:
+                            argname0 = module_port_list[port_type][0]
+                            argname1 = module_port_list[port_type][1]
+                            port0 = vast.PortArg(portname=ports[0], argname=vast.Identifier(name=argname0))
+                            port1 = vast.PortArg(portname=ports[1], argname=vast.Identifier(name=argname1))
+                            instance_port_list.append(port0)
+                            instance_port_list.append(port1)
+            elif num_w_ports == 1:
+                # 1rw1w configuration
+                port_type = key
+                if port_type == "data_out":
+                    argname0 = module_port_list[port_type][0]+"_wire"
+                    port0 = vast.PortArg(portname=ports, argname=vast.Identifier(name=argname0))
+                    instance_port_list.append(port0)
+                elif port_type == "write_en":
+                    sign = get_port_polarity(module_port_polarity[port_type], openram_port_polarity[port_type])
+                    argname0 = sign + module_port_list[port_type][0]
+                    port0 = vast.PortArg(portname=ports, argname=vast.Identifier(name=argname0))
+                    instance_port_list.append(port0)
+                else:
+                    if port_type == "chip_select":
+                        sign = get_port_polarity(module_port_polarity[port_type], openram_port_polarity[port_type])
+
+                        argname0 = sign + module_port_list[port_type][0]
+                        argname1 = sign + module_port_list[port_type][1]
                         port0 = vast.PortArg(portname=ports[0], argname=vast.Identifier(name=argname0))
                         port1 = vast.PortArg(portname=ports[1], argname=vast.Identifier(name=argname1))
                         instance_port_list.append(port0)
@@ -125,48 +207,46 @@ def verilog_writer(portlist, instance_name, num_r_ports, num_w_ports, num_rw_por
                         port1 = vast.PortArg(portname=ports[1], argname=vast.Identifier(name=argname1))
                         instance_port_list.append(port0)
                         instance_port_list.append(port1)
-            elif num_w_ports == 1:
-                port_type = key
-                if port_type == "data_out" or port_type == "write_en":
-                    if port_type == "data_out":
-                        argname0 = module_port_list[port_type]+"_wire"
-                        port0 = vast.PortArg(portname=ports, argname=vast.Identifier(name=argname0))
-                        instance_port_list.append(port0)
-                    else:
-                        argname0 = module_port_list[port_type]
-                        port0 = vast.PortArg(portname=ports, argname=vast.Identifier(name=argname0))
-                        instance_port_list.append(port0)
-                else:
-                    argname0 = module_port_list[port_type][0]
-                    argname1 = module_port_list[port_type][1]
-                    port0 = vast.PortArg(portname=ports[0], argname=vast.Identifier(name=argname0))
-                    port1 = vast.PortArg(portname=ports[1], argname=vast.Identifier(name=argname1))
-                    instance_port_list.append(port0)
-                    instance_port_list.append(port1)
             else:
+                # 1rw configuration
                 port_type = key
                 if port_type == "data_out":
-                    argname0 = module_port_list[port_type]+"_wire"
+                    argname0 = module_port_list[port_type][0]+"_wire"
+                    port0 = vast.PortArg(portname=ports, argname=vast.Identifier(name=argname0))
+                    instance_port_list.append(port0)
+                elif port_type == "chip_select" or port_type == "write_en":
+                    sign = get_port_polarity(module_port_polarity[port_type], openram_port_polarity[port_type])
+                    argname0 = sign + module_port_list[port_type][0]
                     port0 = vast.PortArg(portname=ports, argname=vast.Identifier(name=argname0))
                     instance_port_list.append(port0)
                 else:
-                    argname0 = module_port_list[port_type]
+                    argname0 = module_port_list[port_type][0]
                     port0 = vast.PortArg(portname=ports, argname=vast.Identifier(name=argname0))
                     instance_port_list.append(port0)
         else:
             if num_r_ports == 1 and num_w_ports == 1:
+                # 1r1w configuration
                 port_type = key
                 if port_type == "data_in" or port_type == "data_out":
                     if port_type == "data_out":
-                        argname0 = module_port_list[port_type]+"_wire"
+                        argname0 = module_port_list[port_type][0]+"_wire"
                         port0 = vast.PortArg(portname=ports, argname=vast.Identifier(name=argname0))
                         instance_port_list.append(port0)
                     else:
-                        argname0 = module_port_list[port_type]
+                        argname0 = module_port_list[port_type][0]
                         port0 = vast.PortArg(portname=ports, argname=vast.Identifier(name=argname0))
                         instance_port_list.append(port0)
                 elif port_type == "write_en":
                     pass
+                elif port_type == "chip_select":
+                    sign = get_port_polarity(module_port_polarity[port_type], openram_port_polarity[port_type])
+
+                    argname0 = sign + module_port_list[port_type][0]
+                    argname1 = sign + module_port_list[port_type][1]
+                    port0 = vast.PortArg(portname=ports[0], argname=vast.Identifier(name=argname0))
+                    port1 = vast.PortArg(portname=ports[1], argname=vast.Identifier(name=argname1))
+                    instance_port_list.append(port0)
+                    instance_port_list.append(port1)
                 else:
                     argname0 = module_port_list[port_type][0]
                     argname1 = module_port_list[port_type][1]
@@ -174,12 +254,6 @@ def verilog_writer(portlist, instance_name, num_r_ports, num_w_ports, num_rw_por
                     port1 = vast.PortArg(portname=ports[1], argname=vast.Identifier(name=argname1))
                     instance_port_list.append(port0)
                     instance_port_list.append(port1)
-
-
-
-
-
-    #instance_port_list = [vast.PortArg(portname="in", argname=vast.Identifier(name="clk"))]
 
     instance = vast.Instance(
             module=instance_name, name="sram",
