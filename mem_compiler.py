@@ -78,7 +78,7 @@ def create_openram_style_ports(num_r_ports, num_w_ports, num_rw_ports):
             openram_ports["chip_select"] = (chip_select+"0", chip_select+"1")
             openram_ports["address"] = (address+"0", address+"1")
             openram_ports["data_in"] = (data_in+"0")
-            openram_ports["data_out"] = (data_out+"0")
+            openram_ports["data_out"] = (data_out+"1")
             openram_ports["write_en"] = ()
 
     return openram_ports
