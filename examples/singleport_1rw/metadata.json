@@ -1,0 +1,26 @@
+{
+    "module_name": "singleport_1rw",
+	"ports": [
+		{
+		    "type": "clock",
+			"name": "clk"
+		},
+		{
+		    "type": "chip_select",
+			"name": "en",
+			"polarity": "active high"
+		},
+		{
+		    "type": "address",
+			"name": "addr"
+		},
+		{
+		    "type": "data_in",
+			"name": "di"
+		},
+		{
+		    "type": "data_out",
+			"name": "dout"
+		}
+     ]
+}

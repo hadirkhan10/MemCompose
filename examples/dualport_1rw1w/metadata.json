@@ -1,0 +1,48 @@
+{
+    "module_name": "dualport_1rw1w",
+	"ports": [
+		{
+		    "type": "clock",
+			"name": "clka"
+		},
+		{
+		    "type": "clock",
+			"name": "clkb"
+		},
+		{
+		    "type": "chip_select",
+			"name": "ena",
+			"polarity": "active high"
+		},
+		{
+		    "type": "chip_select",
+			"name": "enb",
+			"polarity": "active high"
+		},
+		{
+		    "type": "write_en",
+			"name": "wea",
+			"polarity": "active high"
+		},
+		{
+		    "type": "address",
+			"name": "addra"
+		},
+		{
+		    "type": "address",
+			"name": "addrb"
+		},
+		{
+		    "type": "data_in",
+			"name": "dia"
+		},
+		{
+		    "type": "data_in",
+			"name": "dib"
+		},
+		{
+		    "type": "data_out",
+			"name": "doa"
+		}
+     ]
+}
