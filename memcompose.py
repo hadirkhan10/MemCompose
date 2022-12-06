@@ -29,6 +29,8 @@ def main():
                          default=[], help="Macro Definition")
     optparser.add_option("-t", "--top", dest="topmodule",
                          default="TOP", help="Top module, Default=TOP")
+    optparser.add_option("-j", "--json", dest="jsonFile",
+                         default=None, help="json file for port declaration")
     optparser.add_option("--nobind", action="store_true", dest="nobind",
                          default=False, help="No binding traversal, Default=False")
     optparser.add_option("--noreorder", action="store_true", dest="noreorder",
@@ -45,6 +47,9 @@ def main():
 
     if len(filelist) == 0:
         showVersion()
+
+    if not os.path.exists(options.jsonFile):
+        raise IOError("file not found: " + options.jsonFile)
 
     ast = parser.parse_verilog(filelist,
                             preprocess_include=options.include,
@@ -72,11 +77,13 @@ def main():
                             num_w_ports,
                             num_rw_ports)
 
-    backend.verilog_writer(ports, instance_name, num_r_ports, num_w_ports, num_rw_ports, openram_ports)
+    backend.verilog_writer(options.topmodule, ports, instance_name, num_r_ports, num_w_ports, num_rw_ports, openram_ports)
 
     print(f"Number of read-port: {num_r_ports}")
     print(f"Number of write-port: {num_w_ports}")
     print(f"Number of read-write-port: {num_rw_ports}")
+
+    parser.parse_json(options.jsonFile)
 
 
 

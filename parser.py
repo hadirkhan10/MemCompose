@@ -10,6 +10,7 @@ from pyverilog.vparser.parser import parse
 from pyverilog.dataflow.dataflow_analyzer import VerilogDataflowAnalyzer
 from pyverilog.dataflow.optimizer import VerilogDataflowOptimizer
 from pyverilog.dataflow.walker import VerilogDataflowWalker
+import json
 
 
 
@@ -54,6 +55,13 @@ def parse_verilog(filelist, preprocess_include, preprocess_define):
     #ast.show()
     #return mem_data
 
+def parse_json(jsonFile):
+    with open(jsonFile, 'r') as f:
+        contents = json.loads(f.read())
+
+    print(contents)
+
+
 def get_mem_data(ast):
     mem_data = {}
 
@@ -92,6 +100,7 @@ def get_mem_data(ast):
                                     mem_data[module_name + '.' + memory_name] = (mem_depth, mem_width)
 
     return mem_data
+
 
 def get_ports(ast):
     for child in ast.children():
