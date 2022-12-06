@@ -8,7 +8,7 @@ import pyverilog.vparser.ast as vast
 from pyverilog.ast_code_generator.codegen import ASTCodeGenerator
 
 
-def verilog_writer(portlist, instance_name, num_r_ports, num_w_ports, num_rw_ports, openram_ports):
+def verilog_writer(topmodule, portlist, instance_name, num_r_ports, num_w_ports, num_rw_ports, openram_ports):
     items = []
     assignments = []
     ports_list = portlist
@@ -264,7 +264,9 @@ def verilog_writer(portlist, instance_name, num_r_ports, num_w_ports, num_rw_por
     instances = vast.InstanceList(instance_name, (), instance_list)
     items.append(always)
     items.append(instances)
-    ast = vast.ModuleDef("top", None, ports_list, items)
+    ast = vast.ModuleDef(topmodule, None, ports_list, items)
     codegen = ASTCodeGenerator()
     rslt = codegen.visit(ast)
-    print(rslt)
+
+    with open(topmodule+"_generated.v", 'w') as f:
+        print(rslt, file=f)
