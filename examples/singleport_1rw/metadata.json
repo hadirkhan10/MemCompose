@@ -11,6 +11,11 @@
 			"polarity": "active high"
 		},
 		{
+		    "type": "write_en",
+			"name": "we",
+			"polarity": "active high"
+		},
+		{
 		    "type": "address",
 			"name": "addr"
 		},
