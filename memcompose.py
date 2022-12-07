@@ -77,15 +77,13 @@ def main():
                             num_w_ports,
                             num_rw_ports)
 
-    backend.verilog_writer(options.topmodule, ports, instance_name, num_r_ports, num_w_ports, num_rw_ports, openram_ports)
+    module_port_list, module_port_polarity = parser.parse_json(options.jsonFile)
 
-    print(f"Number of read-port: {num_r_ports}")
-    print(f"Number of write-port: {num_w_ports}")
-    print(f"Number of read-write-port: {num_rw_ports}")
-
-    parser.parse_json(options.jsonFile)
-
-
+    backend.verilog_writer(
+            options.topmodule, ports, instance_name,
+            num_r_ports, num_w_ports,
+            num_rw_ports, openram_ports,
+            module_port_list, module_port_polarity)
 
 
 if __name__ == "__main__":

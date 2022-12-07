@@ -10,6 +10,7 @@ from pyverilog.vparser.parser import parse
 from pyverilog.dataflow.dataflow_analyzer import VerilogDataflowAnalyzer
 from pyverilog.dataflow.optimizer import VerilogDataflowOptimizer
 from pyverilog.dataflow.walker import VerilogDataflowWalker
+from collections import defaultdict
 import json
 
 
@@ -56,10 +57,26 @@ def parse_verilog(filelist, preprocess_include, preprocess_define):
     #return mem_data
 
 def parse_json(jsonFile):
+    acceptable_port_types = ["clock", "chip_select", "write_en", "address", "data_in", "data_out"]
+    acceptable_polarity_types = ["active low", "active high"]
+    module_port_list = defaultdict(list)
+    module_port_polarity = {}
+
     with open(jsonFile, 'r') as f:
         contents = json.loads(f.read())
 
-    print(contents)
+    for port in contents["ports"]:
+        if port["type"] not in acceptable_port_types:
+            raise Exception(f'invalid port type: {port["type"]}')
+        else:
+            if port["type"] == "chip_select" or port["type"] == "write_en":
+                if port["polarity"] not in acceptable_polarity_types:
+                    raise Exception(f'invalid polarity type: {port["polarity"]}')
+                else:
+                    module_port_polarity[port["type"]] = port["polarity"]
+            module_port_list[port["type"]].append(port["name"])
+
+    return module_port_list, module_port_polarity
 
 
 def get_mem_data(ast):

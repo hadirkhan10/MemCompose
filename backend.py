@@ -8,7 +8,10 @@ import pyverilog.vparser.ast as vast
 from pyverilog.ast_code_generator.codegen import ASTCodeGenerator
 
 
-def verilog_writer(topmodule, portlist, instance_name, num_r_ports, num_w_ports, num_rw_ports, openram_ports):
+def verilog_writer(
+        topmodule, portlist, instance_name, num_r_ports,
+        num_w_ports, num_rw_ports, openram_ports,
+        module_port_list, module_port_polarity):
     items = []
     assignments = []
     ports_list = portlist
@@ -26,14 +29,14 @@ def verilog_writer(topmodule, portlist, instance_name, num_r_ports, num_w_ports,
             assignments.append(assign_dout)
 
     # 2RW
-    module_port_list = {
-            "clock": ("clka", "clkb"),
-            "chip_select": ("ena", "enb"),
-            "write_en": ("wea", "web"),
-            "address": ("addra", "addrb"),
-            "data_in": ("dina", "dinb"),
-            "data_out": ("doa", "dob")
-            }
+    #module_port_list = {
+    #        "clock": ["clka", "clkb"],
+    #        "chip_select": ["ena", "enb"],
+    #        "write_en": ["wea", "web"],
+    #        "address": ["addra", "addrb"],
+    #        "data_in": ["dina", "dinb"],
+    #        "data_out": ["doa", "dob"]
+    #        }
 
     # 1rw1r
     #module_port_list = {
@@ -67,18 +70,21 @@ def verilog_writer(topmodule, portlist, instance_name, num_r_ports, num_w_ports,
 
     # 1r1w
     #module_port_list = {
-    #        "clock": ("clka", "clkb"),
-    #        "chip_select": ("ena", "enb"),
-    #        "write_en": (),
-    #        "address": ("addra", "addrb"),
-    #        "data_in": ("dia",),
-    #        "data_out": ("dob",)
+    #        "clock": ["clka", "clkb"],
+    #        "chip_select": ["ena", "enb"],
+    #        "address": ["addra", "addrb"],
+    #        "data_in": ["dia"],
+    #        "data_out": ["dob"]
     #        }
 
-    module_port_polarity = {
-            "chip_select": "active high",
-            "write_en": "active high",
-            }
+    #module_port_polarity = {
+    #        "chip_select": "active high",
+    #        "write_en": "active high",
+    #        }
+
+    #module_port_polarity = {
+    #        "chip_select": "active high"
+    #        }
 
     openram_port_polarity = {
             "chip_select": "active low",
