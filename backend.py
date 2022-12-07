@@ -28,63 +28,6 @@ def verilog_writer(
                 vast.Rvalue(vast.Identifier(str(port.first.name+"_wire"))))
             assignments.append(assign_dout)
 
-    # 2RW
-    #module_port_list = {
-    #        "clock": ["clka", "clkb"],
-    #        "chip_select": ["ena", "enb"],
-    #        "write_en": ["wea", "web"],
-    #        "address": ["addra", "addrb"],
-    #        "data_in": ["dina", "dinb"],
-    #        "data_out": ["doa", "dob"]
-    #        }
-
-    # 1rw1r
-    #module_port_list = {
-    #        "clock": ("clka", "clkb"),
-    #        "chip_select": ("ena", "enb"),
-    #        "write_en": ("wea",),
-    #        "address": ("addra", "addrb"),
-    #        "data_in": ("dina",),
-    #        "data_out": ("doa", "dob")
-    #        }
-
-    # 1rw1w
-    #module_port_list = {
-    #        "clock": ("clka", "clkb"),
-    #        "chip_select": ("ena", "enb"),
-    #        "write_en": ("wea",),
-    #        "address": ("addra", "addrb"),
-    #        "data_in": ("dina", "dinb"),
-    #        "data_out": ("doa",)
-    #        }
-
-    # 1rw
-    #module_port_list = {
-    #        "clock": ("clk",),
-    #        "chip_select": ("en",),
-    #        "write_en": ("we",),
-    #        "address": ("addr",),
-    #        "data_in": ("di",),
-    #        "data_out": ("dout",)
-    #        }
-
-    # 1r1w
-    #module_port_list = {
-    #        "clock": ["clka", "clkb"],
-    #        "chip_select": ["ena", "enb"],
-    #        "address": ["addra", "addrb"],
-    #        "data_in": ["dia"],
-    #        "data_out": ["dob"]
-    #        }
-
-    #module_port_polarity = {
-    #        "chip_select": "active high",
-    #        "write_en": "active high",
-    #        }
-
-    #module_port_polarity = {
-    #        "chip_select": "active high"
-    #        }
 
     openram_port_polarity = {
             "chip_select": "active low",
@@ -102,7 +45,7 @@ def verilog_writer(
             return ""
 
 
-    # TODO: right now just storing the read value to dout reg based on the
+    # right now just storing the read value to dout reg based on the
     # first clock provided by the user in case of dual port sram
     clock = module_port_list["clock"][0]
 

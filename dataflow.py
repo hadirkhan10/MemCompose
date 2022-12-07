@@ -20,68 +20,6 @@ def dataflow_analysis(file, topmodule, mem_data, noreorder, nobind, include, def
 
     walker = VerilogDataflowWalker(topmodule, terms, binddict, None, None, None)
 
-    # single port - RW
-    # ram: {
-    #   pointer: addr,
-    #   cond: en,
-    #   en: {   truenode: {
-    #               cond: we
-    #               we: {   truenode: di,
-    #                       falsenode: None
-    #               }
-    #           },
-    #           falsenode: None
-    #       }
-    # },
-    # dout: {
-    #   cond: en,
-    #   en: {   truenode: {
-    #               cond: we
-    #               we: {   truenode: None,
-    #                       falsenode: (ram, addr)
-    #                   }
-    #           },
-    #           falsenode: None
-    #       }
-    # }
-    #       
-
-    # dual port - 
-    # ram: {
-    #   pointer: addra,
-    #   cond: ena,
-    #   ena: {   truenode: {
-    #               cond: wea
-    #               wea: {   truenode: dia,
-    #                       falsenode: None
-    #               }
-    #           },
-    #           falsenode: None
-    #       }
-    # },
-    # dout: {
-    #   cond: enb,
-    #   enb: {  truenode: (ram, addrb) 
-    #           falsenode: None
-    #       }
-    # }
-    #       
-
-    # {
-    #   chip_select: ena
-    #   write_en: wea
-    # }
-
-
-
-    # single port configurations can be:
-    #   1. 1rw
-
-    # dual port configurations can be:
-    #   1. 1r1w
-    #   2. 1rw1r
-    #   3. 1rw1w
-    #   4. 2rw
 
     dest_mem_pointers = []
     source_mem_pointers = []
