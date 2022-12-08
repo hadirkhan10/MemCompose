@@ -1,12 +1,31 @@
-# figure out if the memory is a single port or dual port
-# if single port:
-#   one sensitivity list
-# else:
-#   two sensitivity list
-
 import pyverilog.vparser.ast as vast
 from pyverilog.ast_code_generator.codegen import ASTCodeGenerator
+import sram_compiler
 
+def create_config(mem_data, num_r_ports, num_w_ports, num_rw_ports):
+    for key, value in mem_data.items():
+        num_words = value[0]
+        word_size = value[1]
+        tech_name = 'scn4m_subm'
+        name = key.split(".")[0]
+        with open(f"{name}.py", "w") as file:
+            file.write(f"# this file is created by MemCompose - Muhammad Hadir Khan\n"
+                       f"# data word size \n"
+                       f"word_size = {word_size}\n"
+                       f"# num of words \n"
+                       f"num_words = {num_words}\n"
+                       f"num_rw_ports = {num_rw_ports}\n"
+                       f"num_w_ports = {num_w_ports}\n"
+                       f"num_r_ports = {num_r_ports}\n"
+                       f"# Technology to use in $OPENRAM_TECH \n"
+                       f"tech_name = '{tech_name}' \n"
+                       f"nominal_corner_only = True \n"
+                       f"output_path = 'temp' \n"
+                       f"output_name = 'sram_{word_size}_{num_words}_{tech_name}'"
+                       )
+
+        print("Done creating OpenRAM configuration file for memory:", key, "of depth:", num_words, "and width:", word_size)
+        return f"sram_{word_size}_{num_words}_{tech_name}"
 
 def verilog_writer(
         topmodule, portlist, instance_name, num_r_ports,
@@ -17,8 +36,6 @@ def verilog_writer(
     ports_list = portlist
     for port in ports_list.ports:
         if str(type(port.first)) == "<class 'pyverilog.vparser.ast.Output'>":
-            print(f"output name: {port.first.name}")
-            print(f"output width: {port.first.width}")
             dout = vast.Reg(str(port.first.name), width=port.first.width)
             dout_wire = vast.Wire(str(port.first.name+"_wire"), width=port.first.width)
             items.append(dout)
@@ -29,10 +46,7 @@ def verilog_writer(
             assignments.append(assign_dout)
 
 
-    openram_port_polarity = {
-            "chip_select": "active low",
-            "write_en": "active low"
-            }
+    openram_port_polarity = sram_compiler.get_openram_port_polarity()
 
     def get_port_polarity(module_port_pol, openram_port_pol):
         if module_port_pol == "active low" and openram_port_pol == "active low":
@@ -219,3 +233,4 @@ def verilog_writer(
 
     with open(topmodule+"_generated.v", 'w') as f:
         print(rslt, file=f)
+    print("Done writing verilog file:", topmodule+"_generated.v")
