@@ -33,37 +33,24 @@ def dataflow_analysis(file, topmodule, mem_data, noreorder, nobind, include, def
         if str(type(truenode)) == "<class 'pyverilog.dataflow.dataflow.DFBranch'>":
             walkerForBranch(truenode, dest)
 
-        elif str(type(truenode)) == "<class 'pyverilog.dataflow.dataflow.DFTerminal'>":
-            print(dest, "is written by",truenode.name)
-
         elif str(type(truenode)) == "<class 'pyverilog.dataflow.dataflow.DFPointer'>":
             # reading from a memory
             var, ptr = truenode.children()
             source_mem_pointers.append(str(ptr))
-            print(f"{dest} is written by {var}[{ptr}]")
-
 
         if str(type(falsenode)) == "<class 'pyverilog.dataflow.dataflow.DFBranch'>":
             walkerForBranch(falsenode, dest)
-        elif str(type(falsenode)) == "<class 'pyverilog.dataflow.dataflow.DFTerminal'>":
-            print(dest, "is written by",falsenode.name)
         elif str(type(falsenode)) == "<class 'pyverilog.dataflow.dataflow.DFPointer'>":
             # reading from a memory
             var, ptr = falsenode.children()
             source_mem_pointers.append(str(ptr))
-            print(f"{dest} is written by {var}[{ptr}]")
-
 
     for key, value in binddict.items():
         for v in value:
-            print(v.tostr())
-
             if str(v.dest) in list(mem_data.keys()):
                 mem_ptr = str(v.ptr)
                 mem_name = str(v.dest)
                 dest_mem_pointers.append(mem_ptr)
-                print(v.ptr)
-
 
             tree = v.tree
             walked_tree = walker.walkTree(tree)
