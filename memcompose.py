@@ -5,7 +5,7 @@ import os
 from optparse import OptionParser
 import pyverilog
 import parser
-import mem_compiler
+import sram_compiler
 import dataflow
 import backend
 
@@ -57,10 +57,7 @@ def main():
 
     mem_data = parser.get_mem_data(ast)
 
-    print(mem_data)
-
     ports = parser.get_ports(ast)
-    print(ports)
 
     num_r_ports, num_w_ports, num_rw_ports = dataflow.dataflow_analysis(
                                                 filelist,
@@ -70,9 +67,9 @@ def main():
                                                 options.include,
                                                 options.define)
 
-    instance_name = mem_compiler.create_config(mem_data, num_r_ports, num_w_ports, num_rw_ports)
+    instance_name = backend.create_config(mem_data, num_r_ports, num_w_ports, num_rw_ports)
 
-    openram_ports = mem_compiler.create_openram_style_ports(
+    openram_ports = sram_compiler.create_openram_style_ports(
                             num_r_ports,
                             num_w_ports,
                             num_rw_ports)
